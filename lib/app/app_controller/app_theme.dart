@@ -10,38 +10,20 @@ class ThemeManager {
   static final ThemeManager shared = ThemeManager._internal();
 
   TextTheme _textTheme(TextTheme base, Color color) {
-    return GoogleFonts.robotoTextTheme(base).copyWith(
-      headline1:
-          base.headline1?.copyWith(color: color, fontWeight: FontWeight.w500),
-      headline2:
-          base.headline2?.copyWith(color: color, fontWeight: FontWeight.w500),
-      headline3:
-          base.headline3?.copyWith(color: color, fontWeight: FontWeight.w500),
-      headline4:
-          base.headline4?.copyWith(color: color, fontWeight: FontWeight.w500),
-      headline5:
-          base.headline5?.copyWith(color: color, fontWeight: FontWeight.w500),
-      headline6:
-          base.headline6?.copyWith(color: color, fontWeight: FontWeight.w500),
-      subtitle1:
-          base.subtitle1?.copyWith(color: color, fontWeight: FontWeight.w500),
-      subtitle2:
-          base.subtitle2?.copyWith(color: color, fontWeight: FontWeight.w500),
-      bodyText1: base.bodyText1?.copyWith(
-        color: color,
-      ),
-      bodyText2: base.bodyText2?.copyWith(
-        color: color,
-      ),
-      overline: base.overline?.copyWith(
-        color: color,
-      ),
-      button: base.button?.copyWith(
-        color: color,
-      ),
-      caption: base.caption?.copyWith(
-        color: color,
-      ),
+    return GoogleFonts.nunitoTextTheme(base).copyWith(
+      headline1: GoogleFonts.nunito(textStyle: base.headline1).copyWith(color: color),
+      headline2: GoogleFonts.nunito(textStyle: base.headline2).copyWith(color: color),
+      headline3: GoogleFonts.nunito(textStyle: base.headline3).copyWith(color: color),
+      headline4: GoogleFonts.nunito(textStyle: base.headline4).copyWith(color: color),
+      headline5: GoogleFonts.nunito(textStyle: base.headline5).copyWith(color: color),
+      headline6: GoogleFonts.nunito(textStyle: base.headline6).copyWith(color: color),
+      subtitle1: GoogleFonts.nunito(textStyle: base.subtitle1).copyWith(color: color),
+      subtitle2: GoogleFonts.nunito(textStyle: base.subtitle2).copyWith(color: color),
+      bodyText1: GoogleFonts.nunito(textStyle: base.bodyText1).copyWith(color: color),
+      bodyText2: GoogleFonts.nunito(textStyle: base.bodyText2).copyWith(color: color),
+      overline: GoogleFonts.nunito(textStyle: base.overline).copyWith(color: color),
+      button: GoogleFonts.nunito(textStyle: base.button).copyWith(color: color),
+      caption: GoogleFonts.nunito(textStyle: base.caption).copyWith(color: color),
     );
   }
 
@@ -67,8 +49,8 @@ class ThemeManager {
       accentColor: AppColors.secondaryColor,
       canvasColor: Colors.white,
       shadowColor: AppColors.shadowColor,
-      backgroundColor: AppColors.lightGrey,
-      scaffoldBackgroundColor: AppColors.white,
+      backgroundColor: AppColors.backgroundColor,
+      scaffoldBackgroundColor: AppColors.scaffoldBackgroundColor,
       errorColor: AppColors.errorColor,
       hintColor: AppColors.textHintColor,
       iconTheme: IconThemeData(color: AppColors.white),

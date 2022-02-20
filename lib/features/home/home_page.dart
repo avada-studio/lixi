@@ -4,9 +4,12 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:lixi/app/app_resources/app_colors.dart';
 import 'package:lixi/app/app_resources/app_dimens.dart';
 import 'package:lixi/app/app_resources/app_images.dart';
+import 'package:lixi/entities/item.dart';
+import 'package:lixi/enums/item_type.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -25,33 +28,69 @@ class _ContentView extends StatefulWidget {
 class _ContentViewState extends State<_ContentView> {
   StreamController<int> controller = StreamController<int>();
 
-  List<int> onePercent = [0];
-  List<int> sevenPercent = [2];
-  List<int> twentyPercent = [4, 11];
-  List<int> thirtyPercent = [6];
-  List<int> fiftyPercent = [1, 3, 5, 7, 9];
-  List<int> oneHundredPercent = [10];
+  final AudioPlayer audioPlayer = AudioPlayer();
 
   int _selected = 1;
 
-  List<_Item> items = [
-    _Item("500.000", Color(0xFF363D9E), 0),
-    _Item("Lời chúc", Color(0xFF2B2668), 1),
-    _Item("200.000", Color(0xFF72349A), 0),
-    _Item("Lời chúc", Color(0xFF9E309A), 1),
-    _Item("100.000", Color(0xFFF2212C), 0),
-    _Item("Lời chúc", Color(0xFFF3662D), 1),
-    _Item("50.000", Color(0xFFFDBB43), 0),
-    _Item("Lời chúc", Color(0xFF95CD49), 1),
-    _Item("20.000", Color(0xFF0D9E51), 0),
-    _Item("Lời chúc", Color(0xFF18B2A6), 1),
-    _Item("10.000", Color(0xFF2AB3E6), 0),
-    _Item("Thêm lượt", Color(0xFF0A7EC0), 2),
+  List<Item> items = [
+    Item("500.000", "", ItemType.Normal, 1),
+    Item(
+      "Lời chúc",
+      "Hoa đào nở, chim én về, mùa xuân lại đến. Chúc một năm mới: nghìn sự như ý, vạn sự như mơ, triệu sự bất ngờ, tỷ lần hạnh phúc.",
+      ItemType.Message,
+      5,
+    ),
+    Item("200.000", "", ItemType.Normal, 5),
+    Item(
+      "Lời chúc",
+      "Hoa đào nở, chim én về, mùa xuân lại đến. Chúc một năm mới: nghìn sự như ý, vạn sự như mơ, triệu sự bất ngờ, tỷ lần hạnh phúc.",
+      ItemType.Message,
+      5,
+    ),
+    Item("100.000", "", ItemType.Normal, 10),
+    Item(
+      "Lời chúc",
+      "Hoa đào nở, chim én về, mùa xuân lại đến. Chúc một năm mới: nghìn sự như ý, vạn sự như mơ, triệu sự bất ngờ, tỷ lần hạnh phúc.",
+      ItemType.Message,
+      5,
+    ),
+    Item("50.000", "", ItemType.Normal, 20),
+    Item(
+      "Lời chúc",
+      "Hoa đào nở, chim én về, mùa xuân lại đến. Chúc một năm mới: nghìn sự như ý, vạn sự như mơ, triệu sự bất ngờ, tỷ lần hạnh phúc.",
+      ItemType.Message,
+      5,
+    ),
+    Item("20.000", "", ItemType.Normal, 30),
+    Item(
+      "Lời chúc",
+      "Hoa đào nở, chim én về, mùa xuân lại đến. Chúc một năm mới: nghìn sự như ý, vạn sự như mơ, triệu sự bất ngờ, tỷ lần hạnh phúc.",
+      ItemType.Message,
+      5,
+    ),
+    Item("10.000", "", ItemType.Normal, 50),
+    Item("Thêm lượt", "", ItemType.Normal, 10),
+  ];
+
+  List<Color> colors = [
+    Color(0xFF363D9E),
+    Color(0xFF2B2668),
+    Color(0xFF72349A),
+    Color(0xFF9E309A),
+    Color(0xFFF2212C),
+    Color(0xFFF3662D),
+    Color(0xFFFDBB43),
+    Color(0xFF95CD49),
+    Color(0xFF0D9E51),
+    Color(0xFF18B2A6),
+    Color(0xFF2AB3E6),
+    Color(0xFF0A7EC0),
   ];
 
   @override
   void dispose() {
     controller.close();
+    audioPlayer.dispose();
     super.dispose();
   }
 
@@ -76,41 +115,29 @@ class _ContentViewState extends State<_ContentView> {
                   right: AppDimens.huge,
                 ),
                 child: FortuneWheel(
+                  rotationCount: 800,
+                  duration: Duration(seconds: 40),
                   physics: CircularPanPhysics(
                     duration: Duration(seconds: 1),
                     curve: Curves.decelerate,
                   ),
                   onAnimationEnd: () {
-                      var item = items[_selected];
-                      if (item.type == 1) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text("Chúc mừng năm mới"),
-                        ));
-                      }
+                    var item = items[_selected];
+                    if (item.type == ItemType.Message) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(item.message),
+                      ));
+                    }
+                    stop();
                   },
                   animateFirst: false,
                   onFling: () {
-                    _selected = random();
+                    _selected = findLuckyItem(items, items.length - 1);
                     controller.add(_selected);
+                    play();
                   },
                   selected: controller.stream,
-                  items: items
-                      .map((e) => FortuneItem(
-                          child: Text(
-                            e.title,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText1!
-                                .copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.white),
-                          ),
-                          style: FortuneItemStyle(
-                            color: e.color,
-                            borderColor: Colors.white,
-                            borderWidth: 2,
-                          )))
-                      .toList(),
+                  items: renderFortuneItems(),
                 ),
               ))
         ],
@@ -118,35 +145,56 @@ class _ContentViewState extends State<_ContentView> {
     );
   }
 
-  int random() {
-    var rng = Random();
-    int perCent = rng.nextInt(100);
-    if (perCent < 1) {
-      int r = rng.nextInt(onePercent.length);
-      return onePercent[r];
-    } else if (perCent < 7) {
-      int r = rng.nextInt(sevenPercent.length);
-      return sevenPercent[r];
-    } else if (perCent < 20) {
-      int r = rng.nextInt(twentyPercent.length);
-      return twentyPercent[r];
-    } else if (perCent < 30) {
-      int r = rng.nextInt(thirtyPercent.length);
-      return thirtyPercent[r];
-    } else if (perCent < 50) {
-      int r = rng.nextInt(fiftyPercent.length);
-      return fiftyPercent[r];
-    } else {
-      int r = rng.nextInt(oneHundredPercent.length);
-      return oneHundredPercent[r];
+  List<FortuneItem> renderFortuneItems() {
+    List<FortuneItem> rs = [];
+    for (var i = 0; i < items.length; i++) {
+      Item e = items[i];
+      rs.add(FortuneItem(
+          child: Text(
+            e.title,
+            style: Theme.of(context)
+                .textTheme
+                .button!
+                .copyWith(fontWeight: FontWeight.w900, color: AppColors.white),
+          ),
+          style: FortuneItemStyle(
+            color: getColor(i),
+            borderColor: Colors.white,
+            borderWidth: 2,
+          )));
     }
+    return rs;
   }
-}
 
-class _Item {
-  String title;
-  Color color;
-  int type = 0;
+  Color getColor(int index) {
+    return colors[index % colors.length];
+  }
 
-  _Item(this.title, this.color, this.type);
+  int findLuckyItem(List<Item> items, int defaultIndex) {
+    var rng = Random();
+    int total = items.fold(0, (p, e) => p + e.range);
+    int luckyNumber = rng.nextInt(total);
+    print(luckyNumber);
+    int flag = 0;
+    for (var i = 0; i < items.length; i++) {
+      Item e = items[i];
+      if (luckyNumber >= flag && luckyNumber < flag + e.range) {
+        return i;
+      }
+      flag += e.range;
+    }
+    return defaultIndex;
+  }
+
+  play() async {
+    await audioPlayer.setAsset('assets/audio/bgm.mp3');
+    audioPlayer.play();
+    await Future.delayed(Duration(milliseconds: 41700));
+    audioPlayer.stop();
+  }
+
+  stop() async {
+    //audioPlayer.stop();
+  }
+
 }

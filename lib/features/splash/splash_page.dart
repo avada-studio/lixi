@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lixi/app/app_resources/app_colors.dart';
+import 'package:lixi/app/app_resources/app_dimens.dart';
 import 'package:lixi/app/app_resources/app_images.dart';
 import 'package:lixi/features/home/home_page.dart';
 
@@ -31,7 +33,7 @@ class _ContentViewState extends State<_ContentView> {
     return FutureBuilder<bool>(
       future: _init,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done){
+        if (snapshot.connectionState == ConnectionState.done) {
           return HomePage();
         }
         return Container(
@@ -39,14 +41,23 @@ class _ContentViewState extends State<_ContentView> {
           height: double.infinity,
           child: Stack(
             children: [
-              Positioned.fill(child: Image.asset(
+              Positioned.fill(
+                  child: Image.asset(
                 AppImages.background,
                 fit: BoxFit.cover,
               )),
               Center(
-                child: Text(
-                  "Lì xì",
-                  style: Theme.of(context).textTheme.headline2!.copyWith(color: AppColors.white),
+                child: Padding(
+                  padding: const EdgeInsets.all(AppDimens.large),
+                  child: Text(
+                    "Lì xì",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.comforter(
+                      color: AppColors.white,
+                      fontSize: 100,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               )
             ],
